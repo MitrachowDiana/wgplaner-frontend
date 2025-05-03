@@ -1,7 +1,13 @@
 <template>
-  <div>
+  <div class="task-list">
     <h2>Aufgabenliste</h2>
-    <ul v-if="tasks.length > 0">
+
+    <form @submit.prevent="addTask">
+      <input v-model="newTask" placeholder="Neue Aufgabe..." />
+      <button type="submit">Hinzufügen</button>
+    </form>
+
+    <ul v-if="tasks.length">
       <li v-for="task in tasks" :key="task.id">
         {{ task.description }} – erledigt: {{ task.done }}
       </li>
@@ -11,18 +17,43 @@
 </template>
 
 <script>
+import './TaskList.css';
+
 export default {
   data() {
     return {
-      tasks: []
+      tasks: [],
+      newTask: ''
     };
   },
   mounted() {
-    fetch(`${import.meta.env.VITE_API_URL}/todos`)
-        .then(res => res.json())
-        .then(data => {
-          this.tasks = data;
-        });
+    this.fetchTasks();
+  },
+  methods: {
+    fetchTasks() {
+      fetch(`${import.meta.env.VITE_API_URL}/tasks`)
+          .then(res => res.json())
+          .then(data => {
+            this.tasks = data;
+          });
+    },
+    addTask() {
+      if (!this.newTask.trim()) return;
+
+      fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: this.newTask,
+          done: false
+        })
+      })
+          .then(res => res.json())
+          .then(() => {
+            this.newTask = '';
+            this.fetchTasks();
+          });
+    }
   }
 };
 </script>
