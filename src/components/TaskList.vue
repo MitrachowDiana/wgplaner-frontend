@@ -10,6 +10,7 @@
     <ul v-if="tasks.length">
       <li v-for="task in tasks" :key="task.id">
         {{ task.description }} – erledigt: {{ task.done }}
+        <button @click="deleteTask(task.id)">🗑️</button>
       </li>
     </ul>
     <p v-else>Keine Aufgaben vorhanden</p>
@@ -53,7 +54,14 @@ export default {
             this.newTask = '';
             this.fetchTasks();
           });
+    },
+    deleteTask(id) {
+      fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
+        method: 'DELETE'
+      })
+          .then(() => this.fetchTasks());
     }
+
   }
 };
 </script>
