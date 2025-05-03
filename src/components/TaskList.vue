@@ -18,7 +18,7 @@ export default {
     };
   },
   mounted() {
-    fetch('http://localhost:8080/todos')
+    fetch(`${import.meta.env.VITE_API_URL}/todos`)
         .then(res => res.json())
         .then(data => {
           this.tasks = data;
