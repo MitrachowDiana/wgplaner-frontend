@@ -9,9 +9,17 @@
 
     <ul v-if="tasks.length">
       <li v-for="task in tasks" :key="task.id">
-        {{ task.description }} – erledigt: {{ task.done }}
-        <button @click="deleteTask(task.id)">🗑️</button>
+        <template v-if="editTaskId === task.id">
+          <input v-model="editText" @keyup.enter="saveTask(task.id)" />
+          <button @click="cancelEdit">Abbrechen</button>
+        </template>
+        <template v-else>
+          {{ task.description }} – erledigt: {{ task.done }}
+          <button @click="startEdit(task)">✏️</button>
+          <button @click="deleteTask(task.id)">🗑️</button>
+        </template>
       </li>
+
     </ul>
     <p v-else>Keine Aufgaben vorhanden</p>
   </div>
@@ -24,7 +32,10 @@ export default {
   data() {
     return {
       tasks: [],
-      newTask: ''
+      newTask: '',
+      editTaskId: null,
+      editText: ''
+
     };
   },
   mounted() {
@@ -60,8 +71,31 @@ export default {
         method: 'DELETE'
       })
           .then(() => this.fetchTasks());
+    },
+    startEdit(task) {
+      this.editTaskId = task.id;
+      this.editText = task.description;
+    },
+    cancelEdit() {
+      this.editTaskId = null;
+      this.editText = '';
+    },
+    saveTask(id) {
+      fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: this.editText,
+          done: false // Optional: du kannst später auch task.done übergeben
+        })
+      })
+          .then(res => res.json())
+          .then(() => {
+            this.editTaskId = null;
+            this.editText = '';
+            this.fetchTasks();
+          });
     }
-
   }
 };
 </script>
