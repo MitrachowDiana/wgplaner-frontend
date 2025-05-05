@@ -1,46 +1,66 @@
+/* Grundlayout und Hintergrund */
+body {
+    background-color: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container für die Aufgabenliste */
 .task-list {
     max-width: 600px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Titel */
 .task-list h2 {
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: #333;
+    font-weight: 700;
 }
 
+/* Formular zum Hinzufügen */
 form {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.75rem;
     font-size: 1rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
-button {
-    padding: 0.5rem 1rem;
+/* Hinzufügen-Button */
+button[type="submit"] {
+    padding: 0.75rem 1.2rem;
     font-size: 1rem;
-    background-color: #42b983;
+    background-color: #4caf50;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #369f75;
+button[type="submit"]:hover {
+    background-color: #43a047;
 }
 
+button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Aufgabenliste */
 ul {
     list-style: none;
     padding: 0;
@@ -48,27 +68,74 @@ ul {
 
 li {
     padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    background-color: #fff;
-    border-radius: 4px;
-    border: 1px solid #ddd;
+    margin-bottom: 0.8rem;
+    background-color: #fafafa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Buttons */
+.task-buttons {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .task-list button {
-    margin-left: 8px;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border: none;
-    background-color: #f0f0f0;
     cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
 }
 
-.task-list button:hover {
-    background-color: #e0e0e0;
-}
-
+/* Spezielle Button-Stile */
 .task-list button.edit {
-    color: #007bff;
+    background-color: #ffeb3b;
 }
 
+.task-list button.edit:hover {
+    background-color: #fdd835;
+}
+
+.task-list button.delete {
+    background-color: #ef5350;
+    color: white;
+}
+
+.task-list button.delete:hover {
+    background-color: #e53935;
+}
+
+.task-list button.cancel {
+    background-color: #ccc;
+    color: black;
+}
+
+.task-list button.cancel:hover {
+    background-color: #bbb;
+}
+
+/* Erledigte Aufgaben durchstreichen */
+.done span {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* Checkbox und Text nebeneinander */
+.task-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+/* Checkbox-Styling */
+.task-content input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #42b983;
+}

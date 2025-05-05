@@ -8,18 +8,22 @@
     </form>
 
     <ul v-if="tasks.length">
-      <li v-for="task in tasks" :key="task.id">
+      <li v-for="task in tasks" :key="task.id" :class="{ done: task.done }">
         <template v-if="editTaskId === task.id">
           <input v-model="editText" @keyup.enter="saveTask(task.id)" />
-          <button @click="cancelEdit">Abbrechen</button>
+          <button class="cancel" @click="cancelEdit">Abbrechen</button>
         </template>
         <template v-else>
-          {{ task.description }} – erledigt: {{ task.done }}
-          <button @click="startEdit(task)">✏️</button>
-          <button @click="deleteTask(task.id)">🗑️</button>
+          <div class="task-content">
+            <input type="checkbox" :checked="task.done" @change="toggleDone(task)" />
+            <span>{{ task.description }}</span>
+          </div>
+          <div class="task-buttons">
+            <button class="edit" @click="startEdit(task)">✏️</button>
+            <button class="delete" @click="deleteTask(task.id)">🗑️</button>
+          </div>
         </template>
       </li>
-
     </ul>
     <p v-else>Keine Aufgaben vorhanden</p>
   </div>
@@ -35,7 +39,6 @@ export default {
       newTask: '',
       editTaskId: null,
       editText: ''
-
     };
   },
   mounted() {
@@ -69,8 +72,7 @@ export default {
     deleteTask(id) {
       fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
         method: 'DELETE'
-      })
-          .then(() => this.fetchTasks());
+      }).then(() => this.fetchTasks());
     },
     startEdit(task) {
       this.editTaskId = task.id;
@@ -86,7 +88,7 @@ export default {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           description: this.editText,
-          done: false // Optional: du kannst später auch task.done übergeben
+          done: false
         })
       })
           .then(res => res.json())
@@ -95,8 +97,20 @@ export default {
             this.editText = '';
             this.fetchTasks();
           });
+    },
+    toggleDone(task) {
+      fetch(`${import.meta.env.VITE_API_URL}/tasks/${task.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: task.description,
+          done: !task.done
+        })
+      })
+          .then(() => this.fetchTasks());
     }
   }
 };
 </script>
+
 
