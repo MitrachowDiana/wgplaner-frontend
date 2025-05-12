@@ -1,6 +1,6 @@
 <template>
   <div class="task-list">
-    <h2>Aufgabenliste</h2>
+    <h2>Checklist</h2>
 
     <form @submit.prevent="addTask">
       <input v-model="newTask" placeholder="Neue Aufgabe..." />
