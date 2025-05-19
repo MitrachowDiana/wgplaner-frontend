@@ -12,7 +12,6 @@
         </option>
       </select>
 
-
       <button type="submit">Hinzufügen</button>
     </form>
 
@@ -27,9 +26,6 @@
           <span class="task-label">
             <input type="checkbox" :checked="task.done" @change="toggleDone(task)" />
             {{ task.description }}
-            <div v-if="task.roommate" class="task-roommate">
-  🧑             {{ task.roommate.name }}
-            </div>
           </span>
           <div v-if="task.roommate" class="task-roommate">
             🧑 {{ task.roommate.name }}
@@ -46,7 +42,7 @@
 
 <script>
 import './TaskList.css'
-import { getRoommates } from '../api/roommateApi' // ✅ korrekt importieren
+import { getRoommates } from '../api/roommateApi'
 
 export default {
   data() {
@@ -60,27 +56,37 @@ export default {
     };
   },
   mounted() {
-    this.fetchTasks()
-    this.loadRoommates()
+    this.fetchTasks();
+    this.loadRoommates();
   },
   methods: {
     async loadRoommates() {
       try {
-        this.roommates = await getRoommates()
-        console.log('Roommates geladen:', this.roommates)
+        this.roommates = await getRoommates();
       } catch (err) {
-        console.error('Fehler beim Laden der Roommates:', err)
+        console.error('Fehler beim Laden der Mitbewohner:', err);
       }
     },
     fetchTasks() {
       fetch(`${import.meta.env.VITE_API_URL}/tasks`)
           .then(res => res.json())
           .then(data => {
-            this.tasks = data
-          })
-    },
+            // 🧠 Füge den vollständigen Roommate-Namen aus der geladenen Liste ein
+            data.forEach(task => {
+              if (task.roommate && task.roommate.id) {
+                const found = this.roommates.find(r => r.id === task.roommate.id);
+                if (found) {
+                  task.roommate.name = found.name;
+                }
+              }
+            });
+
+            this.tasks = data;
+          });
+    }
+    ,
     addTask() {
-      if (!this.newTask.trim() || !this.selectedRoommateId) return
+      if (!this.newTask.trim() || !this.selectedRoommateId) return;
 
       fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
         method: 'POST',
@@ -92,27 +98,36 @@ export default {
         })
       })
           .then(res => res.json())
-          .then(() => {
-            this.newTask = ''
-            this.selectedRoommateId = ''
-            this.fetchTasks()
-          })
+          .then(newTask => {
+            // 🧠 Lokale Roommate-Referenz zuweisen
+            const selectedRoommate = this.roommates.find(
+                r => r.id === this.selectedRoommateId
+            );
+            newTask.roommate = selectedRoommate;
+
+            this.tasks.push(newTask);
+
+            // Reset Eingabe
+            this.newTask = '';
+            this.selectedRoommateId = '';
+          });
     },
     deleteTask(id) {
       fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
         method: 'DELETE'
-      }).then(() => this.fetchTasks())
+      }).then(() => this.fetchTasks());
     },
     startEdit(task) {
-      this.editTaskId = task.id
-      this.editText = task.description
+      this.editTaskId = task.id;
+      this.editText = task.description;
     },
     cancelEdit() {
-      this.editTaskId = null
-      this.editText = ''
+      this.editTaskId = null;
+      this.editText = '';
     },
     saveTask(id) {
-      const task = this.tasks.find(t => t.id === id)
+      const task = this.tasks.find(t => t.id === id);
+
       fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -124,10 +139,10 @@ export default {
       })
           .then(res => res.json())
           .then(() => {
-            this.editTaskId = null
-            this.editText = ''
-            this.fetchTasks()
-          })
+            this.editTaskId = null;
+            this.editText = '';
+            this.fetchTasks();
+          });
     },
     toggleDone(task) {
       fetch(`${import.meta.env.VITE_API_URL}/tasks/${task.id}`, {
@@ -136,14 +151,17 @@ export default {
         body: JSON.stringify({
           description: task.description,
           done: !task.done,
-          roommate: task.roommate
+          roommate: task.roommate ? { id: task.roommate.id } : null
         })
-      })
-          .then(() => this.fetchTasks())
+      }).then(() => this.fetchTasks()); // lädt dann automatisch mit korrigierten Namen
     }
+
+
+
   }
-}
+};
 </script>
+
 
 
 

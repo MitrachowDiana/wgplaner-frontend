@@ -149,9 +149,9 @@ li {
 }
 
 .task-roommate {
-    font-size: 0.85rem;
+    color: black;
+    font-size: 0.9rem;
     margin-top: 0.25rem;
-    color: #ffffff; /* oder #333, je nach Hintergrund */
-    font-style: italic;
 }
+
 
