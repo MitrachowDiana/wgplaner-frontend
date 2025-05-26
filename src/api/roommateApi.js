@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080/roommates'
+const API_URL = `${import.meta.env.VITE_API_URL}/roommates`
 
 export async function getRoommates() {
     const res = await fetch(API_URL)
