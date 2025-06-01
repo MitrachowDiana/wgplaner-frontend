@@ -5,10 +5,13 @@
     <div v-if="loading">Lade Daten...</div>
 
     <div v-else>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
       <label for="name">Wohnungsname:</label>
       <input id="name" v-model="name" placeholder="z. B. Bärlin" />
-      <button @click="handleSave">
-        {{ flat.value && flat.value.id ? 'Aktualisieren' : 'Wohnung erstellen' }}
+
+      <button @click="handleSave" :disabled="saving">
+        {{ flat && flat.id ? 'Aktualisieren' : 'Wohnung erstellen' }}
       </button>
     </div>
   </div>
@@ -21,6 +24,8 @@ import { getFlats, createFlat, updateFlat } from '../api/flatApi'
 const flat = ref(null)
 const name = ref('')
 const loading = ref(true)
+const saving = ref(false)
+const errorMessage = ref(null)
 
 const loadFlats = async () => {
   try {
@@ -35,18 +40,22 @@ const loadFlats = async () => {
     }
   } catch (err) {
     console.error('Fehler beim Laden der Wohnung:', err)
+    errorMessage.value = 'Wohnung konnte nicht geladen werden.'
   } finally {
     loading.value = false
   }
 }
 
 const handleSave = async () => {
-  try {
-    if (!name.value.trim()) {
-      alert('Bitte einen Wohnungsnamen eingeben')
-      return
-    }
+  if (!name.value.trim()) {
+    alert('Bitte einen Wohnungsnamen eingeben.')
+    return
+  }
 
+  saving.value = true
+  errorMessage.value = null
+
+  try {
     let savedFlat
     if (flat.value && flat.value.id) {
       savedFlat = await updateFlat(flat.value.id, { ...flat.value, name: name.value })
@@ -61,7 +70,9 @@ const handleSave = async () => {
     alert('Wohnung gespeichert!')
   } catch (err) {
     console.error('Fehler beim Speichern:', err)
-    alert('Speichern fehlgeschlagen')
+    errorMessage.value = 'Speichern fehlgeschlagen. Bitte versuche es erneut.'
+  } finally {
+    saving.value = false
   }
 }
 
@@ -96,7 +107,17 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:hover:enabled {
   background-color: #369f6b;
+}
+
+.error {
+  color: red;
+  margin-bottom: 1rem;
 }
 </style>

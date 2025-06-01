@@ -1,12 +1,21 @@
 <template>
   <div>
     <h2 class="heading">Mitbewohner verwalten</h2>
-    <PersonForm :modelValue="selectedPerson" @submit="handleSubmit" />
-    <PersonList
-        :persons="persons"
-        @edit="editPerson"
-        @delete="deletePerson"
-    />
+
+    <!-- Hinweis, wenn keine Wohnung vorhanden ist -->
+    <p v-if="!flatId" style="color: red;">
+      ⚠️ Bitte zuerst eine Wohnung unter "🏢 Wohnung" anlegen.
+    </p>
+
+    <!-- Formular & Liste nur anzeigen, wenn Wohnung vorhanden -->
+    <div v-else>
+      <PersonForm :modelValue="selectedPerson" @submit="handleSubmit" />
+      <PersonList
+          :persons="persons"
+          @edit="editPerson"
+          @delete="deletePerson"
+      />
+    </div>
   </div>
 </template>
 
@@ -25,7 +34,6 @@ const persons = ref([])
 const selectedPerson = ref(null)
 const flatId = ref(null)
 
-// Lade Flat-ID aus localStorage
 const loadFlatId = () => {
   const storedId = localStorage.getItem('flatId')
   if (storedId) {
@@ -49,19 +57,28 @@ const handleSubmit = async (person) => {
     return
   }
 
-  if (selectedPerson.value) {
-    await updateRoommate(selectedPerson.value.id, person, flatId.value)
-  } else {
-    await addRoommate(person, flatId.value)
+  try {
+    if (selectedPerson.value) {
+      await updateRoommate(selectedPerson.value.id, person, flatId.value)
+    } else {
+      await addRoommate(person, flatId.value)
+    }
+    selectedPerson.value = null
+    await loadPersons()
+  } catch (e) {
+    console.error('Fehler beim Speichern:', e)
+    alert('Speichern fehlgeschlagen')
   }
-
-  selectedPerson.value = null
-  await loadPersons()
 }
 
 const deletePerson = async (id) => {
-  await deleteRoommate(id)
-  await loadPersons()
+  try {
+    await deleteRoommate(id)
+    await loadPersons()
+  } catch (e) {
+    console.error('Fehler beim Löschen:', e)
+    alert('Löschen fehlgeschlagen')
+  }
 }
 
 const editPerson = (person) => {
