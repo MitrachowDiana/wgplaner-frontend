@@ -23,6 +23,17 @@ import {
 
 const persons = ref([])
 const selectedPerson = ref(null)
+const flatId = ref(null)
+
+// Lade Flat-ID aus localStorage
+const loadFlatId = () => {
+  const storedId = localStorage.getItem('flatId')
+  if (storedId) {
+    flatId.value = parseInt(storedId)
+  } else {
+    console.warn('Keine Wohnung gefunden – bitte zuerst eine Wohnung erstellen.')
+  }
+}
 
 const loadPersons = async () => {
   try {
@@ -33,11 +44,17 @@ const loadPersons = async () => {
 }
 
 const handleSubmit = async (person) => {
-  if (selectedPerson.value) {
-    await updateRoommate(selectedPerson.value.id, person)
-  } else {
-    await addRoommate(person)
+  if (!flatId.value) {
+    alert('Bitte zuerst eine Wohnung erstellen.')
+    return
   }
+
+  if (selectedPerson.value) {
+    await updateRoommate(selectedPerson.value.id, person, flatId.value)
+  } else {
+    await addRoommate(person, flatId.value)
+  }
+
   selectedPerson.value = null
   await loadPersons()
 }
@@ -51,7 +68,10 @@ const editPerson = (person) => {
   selectedPerson.value = person
 }
 
-onMounted(loadPersons)
+onMounted(async () => {
+  loadFlatId()
+  await loadPersons()
+})
 </script>
 
 <style scoped>
@@ -61,4 +81,3 @@ onMounted(loadPersons)
   margin-bottom: 1rem;
 }
 </style>
-

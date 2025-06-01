@@ -1,14 +1,24 @@
-<script setup lang="ts">
+<template>
+  <div class="apartment-view">
+    <h2>Wohnungsdetails 🏠</h2>
+
+    <div v-if="loading">Lade Daten...</div>
+
+    <div v-else>
+      <label for="name">Wohnungsname:</label>
+      <input id="name" v-model="name" placeholder="z. B. Bärlin" />
+      <button @click="handleSave">
+        {{ flat.value && flat.value.id ? 'Aktualisieren' : 'Wohnung erstellen' }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
 import { ref, onMounted } from 'vue'
 import { getFlats, createFlat, updateFlat } from '../api/flatApi'
 
-
-interface Flat {
-  id?: number
-  name: string
-}
-
-const flat = ref<Flat | null>(null)
+const flat = ref(null)
 const name = ref('')
 const loading = ref(true)
 
@@ -18,12 +28,15 @@ const loadFlats = async () => {
     if (data.length > 0) {
       flat.value = data[0]
       name.value = flat.value.name
+
+      // ID im localStorage speichern
+      localStorage.setItem('flatId', flat.value.id)
     } else {
       flat.value = null
       name.value = ''
     }
   } catch (err) {
-    console.error('Fehler beim Laden:', err)
+    console.error('Fehler beim Laden der Wohnung:', err)
   } finally {
     loading.value = false
   }
@@ -36,13 +49,19 @@ const handleSave = async () => {
       return
     }
 
+    let savedFlat
     if (flat.value && flat.value.id) {
-      await updateFlat(flat.value.id, { ...flat.value, name: name.value })
+      savedFlat = await updateFlat(flat.value.id, { ...flat.value, name: name.value })
     } else {
-      await createFlat({ name: name.value })
+      savedFlat = await createFlat({ name: name.value })
     }
 
-    await loadFlats() // 🔁 Neu laden, um Anzeige zu aktualisieren
+    flat.value = savedFlat
+    name.value = savedFlat.name
+
+    // ID im localStorage aktualisieren
+    localStorage.setItem('flatId', savedFlat.id)
+
     alert('Wohnung gespeichert!')
   } catch (err) {
     console.error('Fehler beim Speichern:', err)
@@ -52,22 +71,6 @@ const handleSave = async () => {
 
 onMounted(loadFlats)
 </script>
-
-<template>
-  <div class="apartment-view">
-    <h2>Wohnungsdetails 🏠</h2>
-
-    <div v-if="loading">Lade Daten...</div>
-
-    <div v-else>
-      <label for="name">Wohnungsname:</label>
-      <input id="name" v-model="name" placeholder="z. B. Bärlin" />
-      <button @click="handleSave">
-        {{ flat ? 'Aktualisieren' : 'Wohnung erstellen' }}
-      </button>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .apartment-view {
@@ -79,10 +82,6 @@ onMounted(loadFlats)
 label {
   font-weight: bold;
   margin-right: 0.5rem;
-  color: #1a1a1a;
-}
-
-p {
   color: #1a1a1a;
 }
 
@@ -106,5 +105,3 @@ button:hover {
   background-color: #369f6b;
 }
 </style>
-
-Zusätzlich müssen wir die API-Datei erstellen:
