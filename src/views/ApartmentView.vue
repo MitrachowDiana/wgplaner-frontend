@@ -28,8 +28,6 @@ const loadFlats = async () => {
     if (data.length > 0) {
       flat.value = data[0]
       name.value = flat.value.name
-
-      // ID im localStorage speichern
       localStorage.setItem('flatId', flat.value.id)
     } else {
       flat.value = null
@@ -58,8 +56,6 @@ const handleSave = async () => {
 
     flat.value = savedFlat
     name.value = savedFlat.name
-
-    // ID im localStorage aktualisieren
     localStorage.setItem('flatId', savedFlat.id)
 
     alert('Wohnung gespeichert!')
@@ -82,7 +78,6 @@ onMounted(loadFlats)
 label {
   font-weight: bold;
   margin-right: 0.5rem;
-  color: #1a1a1a;
 }
 
 input {
