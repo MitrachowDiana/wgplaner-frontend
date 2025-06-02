@@ -1,19 +1,25 @@
 <template>
   <form @submit.prevent="onSubmit" class="task-form">
     <div class="form-row">
-      <label for="description">Aufgabe:</label>
-      <input id="description" v-model="form.description" required />
+      <div class="form-group">
+        <label for="description">Aufgabe:</label>
+        <input id="description" v-model="form.description" required />
+      </div>
 
-      <label for="dueDate">Fällig am:</label>
-      <input id="dueDate" type="date" v-model="form.dueDate" />
+      <div class="form-group">
+        <label for="dueDate">Fällig am:</label>
+        <input id="dueDate" type="date" v-model="form.dueDate" />
+      </div>
 
-      <label for="roommate">Zuständig:</label>
-      <select id="roommate" v-model="form.roommateId">
-        <option :value="null">Niemand</option>
-        <option v-for="person in roommates" :key="person.id" :value="person.id">
-          {{ person.name }}
-        </option>
-      </select>
+      <div class="form-group">
+        <label for="roommate">Zuständig:</label>
+        <select id="roommate" v-model="form.roommateId">
+          <option :value="null">Niemand</option>
+          <option v-for="person in roommates" :key="person.id" :value="person.id">
+            {{ person.name }}
+          </option>
+        </select>
+      </div>
 
       <button type="submit">{{ isEditing ? 'Aktualisieren' : 'Erstellen' }}</button>
     </div>
@@ -79,13 +85,19 @@ const onSubmit = () => {
 
 .form-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
 label {
   font-weight: bold;
+  margin-bottom: 0.2rem;
 }
 
 input,
@@ -93,20 +105,22 @@ select {
   padding: 0.4rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  min-width: 160px;
+  min-width: 180px;
 }
 
 button {
   background-color: #42b983;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
-  white-space: nowrap;
+  height: fit-content;
+  align-self: flex-start;
 }
 
 button:hover {
   background-color: #369f6b;
 }
 </style>
+

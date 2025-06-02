@@ -47,17 +47,17 @@ const handleSubmit = async (taskData) => {
       return
     }
 
+    const payload = {
+      description: taskData.description,
+      dueDate: taskData.dueDate,
+      flat: { id: flatId },
+      roommate: taskData.roommateId ? { id: taskData.roommateId } : null
+    }
+
     if (selectedTask.value) {
-      await updateTask(selectedTask.value.id, {
-        ...taskData,
-        flat: { id: flatId },
-        roommate: taskData.roommateId ? { id: taskData.roommateId } : null
-      })
+      await updateTask(selectedTask.value.id, payload)
     } else {
-      await addTask({
-        ...taskData,
-        roommate: taskData.roommateId ? { id: taskData.roommateId } : null
-      }, flatId)
+      await addTask(payload, flatId)
     }
 
     selectedTask.value = null
