@@ -6,11 +6,11 @@ export async function getTasks() {
     return await res.json()
 }
 
-export async function createTask(task) {
+export async function addTask(task) {
     const res = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(task),
+        body: JSON.stringify(task)
     })
     if (!res.ok) throw new Error('Fehler beim Erstellen der Aufgabe')
     return await res.json()
@@ -20,7 +20,7 @@ export async function updateTask(id, task) {
     const res = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(task),
+        body: JSON.stringify(task)
     })
     if (!res.ok) throw new Error('Fehler beim Aktualisieren der Aufgabe')
     return await res.json()
@@ -28,7 +28,7 @@ export async function updateTask(id, task) {
 
 export async function deleteTask(id) {
     const res = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
+        method: 'DELETE'
     })
     if (!res.ok) throw new Error('Fehler beim Löschen der Aufgabe')
 }
