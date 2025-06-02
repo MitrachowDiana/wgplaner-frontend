@@ -1,169 +1,89 @@
 <template>
   <div class="task-list">
-    <h2>Checklist</h2>
+    <h3>Aufgabenliste 📝</h3>
 
-    <form @submit.prevent="addTask">
-      <input v-model="newTask" placeholder="Neue Aufgabe..." />
+    <div v-if="tasks.length === 0">Keine Aufgaben vorhanden.</div>
 
-      <select v-model="selectedRoommateId">
-        <option disabled value="">Mitbewohner auswählen</option>
-        <option v-for="person in roommates" :key="person.id" :value="person.id">
-          {{ person.name }}
-        </option>
-      </select>
+    <div
+        class="task"
+        v-for="task in tasks"
+        :key="task.id"
+    >
+      <div class="description">
+        ✅ {{ task.description }}
+      </div>
 
-      <button type="submit">Hinzufügen</button>
-    </form>
+      <div v-if="task.dueDate" class="due-date">
+        📅 Fällig am: {{ formatDate(task.dueDate) }}
+      </div>
 
-    <ul class="task-list-ul">
-      <li v-for="task in tasks" :key="task.id" :class="{ done: task.done }">
-        <template v-if="editTaskId === task.id">
-          <input v-model="editText" @keyup.enter="saveTask(task.id)" />
-          <button class="cancel" @click="cancelEdit">Abbrechen</button>
-        </template>
+      <div v-if="task.roommate">
+        👤 Zuständig: {{ task.roommate.name }}
+      </div>
 
-        <template v-else>
-          <span class="task-label">
-            <input type="checkbox" :checked="task.done" @change="toggleDone(task)" />
-            {{ task.description }}
-          </span>
-          <div v-if="task.roommate" class="task-roommate">
-            🧑 {{ task.roommate.name }}
-          </div>
-          <div class="task-buttons">
-            <button class="edit" @click="startEdit(task)">✏️</button>
-            <button class="delete" @click="deleteTask(task.id)">🗑️</button>
-          </div>
-        </template>
-      </li>
-    </ul>
+      <div class="actions">
+        <button @click="$emit('edit', task)">✏️ Bearbeiten</button>
+        <button @click="$emit('delete', task.id)">🗑️ Löschen</button>
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-import './TaskList.css'
-import { getRoommates } from '../api/roommateApi'
+<script setup>
+import { defineProps, defineEmits } from 'vue'
 
-export default {
-  data() {
-    return {
-      tasks: [],
-      roommates: [],
-      newTask: '',
-      selectedRoommateId: '',
-      editTaskId: null,
-      editText: ''
-    };
-  },
-  mounted() {
-    this.fetchTasks();
-    this.loadRoommates();
-  },
-  methods: {
-    async loadRoommates() {
-      try {
-        this.roommates = await getRoommates();
-      } catch (err) {
-        console.error('Fehler beim Laden der Mitbewohner:', err);
-      }
-    },
-    fetchTasks() {
-      fetch(`${import.meta.env.VITE_API_URL}/tasks`)
-          .then(res => res.json())
-          .then(data => {
-            // 🧠 Füge den vollständigen Roommate-Namen aus der geladenen Liste ein
-            data.forEach(task => {
-              if (task.roommate && task.roommate.id) {
-                const found = this.roommates.find(r => r.id === task.roommate.id);
-                if (found) {
-                  task.roommate.name = found.name;
-                }
-              }
-            });
+const props = defineProps({
+  tasks: Array
+})
 
-            this.tasks = data;
-          });
-    }
-    ,
-    addTask() {
-      if (!this.newTask.trim() || !this.selectedRoommateId) return;
+defineEmits(['edit', 'delete'])
 
-      fetch(`${import.meta.env.VITE_API_URL}/tasks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: this.newTask,
-          done: false,
-          roommate: { id: this.selectedRoommateId }
-        })
-      })
-          .then(res => res.json())
-          .then(newTask => {
-            // 🧠 Lokale Roommate-Referenz zuweisen
-            const selectedRoommate = this.roommates.find(
-                r => r.id === this.selectedRoommateId
-            );
-            newTask.roommate = selectedRoommate;
-
-            this.tasks.push(newTask);
-
-            // Reset Eingabe
-            this.newTask = '';
-            this.selectedRoommateId = '';
-          });
-    },
-    deleteTask(id) {
-      fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
-        method: 'DELETE'
-      }).then(() => this.fetchTasks());
-    },
-    startEdit(task) {
-      this.editTaskId = task.id;
-      this.editText = task.description;
-    },
-    cancelEdit() {
-      this.editTaskId = null;
-      this.editText = '';
-    },
-    saveTask(id) {
-      const task = this.tasks.find(t => t.id === id);
-
-      fetch(`${import.meta.env.VITE_API_URL}/tasks/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: this.editText,
-          done: task.done,
-          roommate: task.roommate
-        })
-      })
-          .then(res => res.json())
-          .then(() => {
-            this.editTaskId = null;
-            this.editText = '';
-            this.fetchTasks();
-          });
-    },
-    toggleDone(task) {
-      fetch(`${import.meta.env.VITE_API_URL}/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          description: task.description,
-          done: !task.done,
-          roommate: task.roommate ? { id: task.roommate.id } : null
-        })
-      }).then(() => this.fetchTasks()); // lädt dann automatisch mit korrigierten Namen
-    }
-
-
-
-  }
-};
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('de-DE')
+}
 </script>
 
+<style scoped>
+.task-list {
+  margin-top: 1rem;
+}
 
+.task {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
 
+.description {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
 
+.due-date {
+  color: #c0392b;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
 
+.actions {
+  margin-top: 0.5rem;
+}
 
+button {
+  margin-right: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #369f6b;
+}
+</style>
