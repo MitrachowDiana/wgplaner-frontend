@@ -50,10 +50,14 @@ const handleSubmit = async (taskData) => {
     if (selectedTask.value) {
       await updateTask(selectedTask.value.id, {
         ...taskData,
-        flat: { id: flatId }
+        flat: { id: flatId },
+        roommate: taskData.roommateId ? { id: taskData.roommateId } : null
       })
     } else {
-      await addTask({ ...taskData, flat: { id: flatId } })
+      await addTask({
+        ...taskData,
+        roommate: taskData.roommateId ? { id: taskData.roommateId } : null
+      }, flatId)
     }
 
     selectedTask.value = null
@@ -75,7 +79,12 @@ const deleteTaskById = async (id) => {
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
-  return date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('de-DE', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  })
 }
 
 onMounted(loadTasks)

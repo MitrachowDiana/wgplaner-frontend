@@ -6,8 +6,8 @@ export async function getTasks() {
     return await res.json()
 }
 
-export async function addTask(task) {
-    const res = await fetch(API_URL, {
+export async function addTask(task, flatId) {
+    const res = await fetch(`${API_URL}/${flatId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(task)
