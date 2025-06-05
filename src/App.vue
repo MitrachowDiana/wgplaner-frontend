@@ -20,9 +20,16 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Header from './components/Header.vue'
 import TaskList from './components/TaskList.vue'
+import { getTasks } from './api/taskApi'
 
 const route = useRoute()
+const tasks = ref([])
+
+onMounted(async () => {
+  tasks.value = await getTasks()
+})
 </script>
