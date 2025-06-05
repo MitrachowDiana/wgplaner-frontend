@@ -5,15 +5,42 @@
       <h2 class="text-2xl font-semibold mb-4">Aktuelle Aufgaben</h2>
       <h3 class="text-xl font-medium mb-4">Aufgabenliste 📝</h3>
 
-      <div v-if="tasks.length === 0" class="text-gray-500">
+      <!-- Loading State -->
+      <div v-if="loading" class="text-gray-500 text-center py-4">
+        Lade Aufgaben...
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-red-600 text-center py-4">
+        {{ error }}
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="tasks.length === 0" class="text-gray-500 text-center py-4">
         Keine Aufgaben vorhanden.
       </div>
 
+      <!-- Tasks List -->
       <ul v-else class="space-y-3">
-        <li v-for="task in tasks" :key="task.id" class="border-b pb-2">
-          ✅ <strong>{{ task.description }}</strong>
-          <span v-if="task.dueDate"> – 📅 {{ formatDate(task.dueDate) }}</span>
-          <span v-if="task.roommate"> – 👤 {{ task.roommate.name }}</span>
+        <li v-for="task in tasks" :key="task.id" class="border-b pb-3 last:border-b-0">
+          <div class="flex flex-col space-y-1">
+            <div class="flex items-start">
+              <span class="text-green-500 mr-2 mt-0.5">✅</span>
+              <strong class="text-gray-900 flex-1">{{ task.description }}</strong>
+            </div>
+
+            <div class="ml-6 space-y-1">
+              <div v-if="task.dueDate" class="text-sm text-gray-600 flex items-center">
+                <span class="mr-1">📅</span>
+                Fällig am: {{ formatDate(task.dueDate) }}
+              </div>
+
+              <div v-if="task.roommate" class="text-sm text-gray-600 flex items-center">
+                <span class="mr-1">👤</span>
+                Zuständig: {{ task.roommate.name }}
+              </div>
+            </div>
+          </div>
         </li>
       </ul>
     </section>
@@ -78,21 +105,46 @@ import { ref, onMounted } from 'vue'
 import { getTasks } from '../api/taskApi.js'
 
 const tasks = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-onMounted(async () => {
+const loadTasks = async () => {
   try {
+    loading.value = true
+    error.value = null
+
     const result = await getTasks()
     tasks.value = result
+
+    console.log('Aufgaben geladen:', result) // Debug-Log
   } catch (err) {
     console.error('Fehler beim Laden der Aufgaben:', err)
+    error.value = 'Aufgaben konnten nicht geladen werden.'
+  } finally {
+    loading.value = false
   }
-})
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
 }
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('de-DE', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+  } catch (err) {
+    console.error('Fehler beim Formatieren des Datums:', err)
+    return dateStr
+  }
+}
+
+onMounted(() => {
+  loadTasks()
+})
 </script>
 
 <style scoped>
