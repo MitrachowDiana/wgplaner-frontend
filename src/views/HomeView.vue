@@ -1,5 +1,23 @@
 <template>
   <div class="space-y-24">
+    <!-- Aufgaben-Kachel oben -->
+    <section class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8">
+      <h2 class="text-2xl font-semibold mb-4">Aktuelle Aufgaben</h2>
+      <h3 class="text-xl font-medium mb-4">Aufgabenliste 📝</h3>
+
+      <div v-if="tasks.length === 0" class="text-gray-500">
+        Keine Aufgaben vorhanden.
+      </div>
+
+      <ul v-else class="space-y-3">
+        <li v-for="task in tasks" :key="task.id" class="border-b pb-2">
+          ✅ <strong>{{ task.description }}</strong>
+          <span v-if="task.dueDate"> – 📅 {{ formatDate(task.dueDate) }}</span>
+          <span v-if="task.roommate"> – 👤 {{ task.roommate.name }}</span>
+        </li>
+      </ul>
+    </section>
+
     <!-- Hero Section -->
     <section class="text-center space-y-8 py-16">
       <h1 class="text-6xl md:text-7xl lg:text-8xl font-bold">
@@ -33,12 +51,6 @@
       </div>
     </section>
 
-    <!-- Aufgaben-Vorschau auf der Startseite -->
-    <section class="py-16">
-      <h2 class="text-3xl font-semibold mb-6 text-center">Deine Aufgaben</h2>
-      <TaskList :readonly="true" />
-    </section>
-
     <!-- Stats Section -->
     <section class="py-16">
       <div class="card">
@@ -62,7 +74,25 @@
 </template>
 
 <script setup>
-import TaskList from '../components/TaskList.vue'
+import { ref, onMounted } from 'vue'
+import { getTasks } from '../api/taskApi.js'
+
+const tasks = ref([])
+
+onMounted(async () => {
+  try {
+    const result = await getTasks()
+    tasks.value = result
+  } catch (err) {
+    console.error('Fehler beim Laden der Aufgaben:', err)
+  }
+})
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
+}
 </script>
 
 <style scoped>
@@ -76,3 +106,4 @@ import TaskList from '../components/TaskList.vue'
   @apply p-8 text-center;
 }
 </style>
+
