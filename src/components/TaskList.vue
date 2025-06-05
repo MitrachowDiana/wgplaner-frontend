@@ -4,11 +4,7 @@
 
     <div v-if="tasks.length === 0">Keine Aufgaben vorhanden.</div>
 
-    <div
-        class="task"
-        v-for="task in tasks"
-        :key="task.id"
-    >
+    <div class="task" v-for="task in tasks" :key="task.id">
       <div class="description">
         ✅ {{ task.description }}
       </div>
@@ -21,7 +17,7 @@
         👤 Zuständig: {{ task.roommate.name }}
       </div>
 
-      <div class="actions">
+      <div class="actions" v-if="!readonly">
         <button @click="$emit('edit', task)">✏️ Bearbeiten</button>
         <button @click="$emit('delete', task.id)">🗑️ Löschen</button>
       </div>
@@ -36,6 +32,10 @@ const props = defineProps({
   tasks: {
     type: Array,
     default: () => []
+  },
+  readonly: {
+    type: Boolean,
+    default: false
   }
 })
 

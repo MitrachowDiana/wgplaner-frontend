@@ -33,6 +33,12 @@
       </div>
     </section>
 
+    <!-- Aufgaben-Vorschau auf der Startseite -->
+    <section class="py-16">
+      <h2 class="text-3xl font-semibold mb-6 text-center">Deine Aufgaben</h2>
+      <TaskList :readonly="true" />
+    </section>
+
     <!-- Stats Section -->
     <section class="py-16">
       <div class="card">
@@ -55,11 +61,15 @@
   </div>
 </template>
 
+<script setup>
+import TaskList from '../components/TaskList.vue'
+</script>
+
 <style scoped>
 .icon-wrapper {
-  @apply text-4xl flex items-center justify-center w-16 h-16 
-         rounded-2xl bg-primary-100 text-primary-600 mx-auto
-         transition-all duration-300;
+  @apply text-4xl flex items-center justify-center w-16 h-16
+  rounded-2xl bg-primary-100 text-primary-600 mx-auto
+  transition-all duration-300;
 }
 
 .card {
