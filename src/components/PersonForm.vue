@@ -1,7 +1,21 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="person-form">
-    <input v-model="form.name" placeholder="Name" required />
-    <button type="submit">{{ isEdit ? 'Ändern' : 'Hinzufügen' }}</button>
+  <form @submit.prevent="handleSubmit" class="space-y-4">
+    <div class="space-y-2">
+      <label for="name" class="block text-sm font-medium text-gray-700">
+        Name des Mitbewohners
+      </label>
+      <input 
+        id="name"
+        v-model="form.name" 
+        placeholder="Name eingeben" 
+        required
+        class="input w-full"
+      />
+    </div>
+
+    <button type="submit" class="btn w-full">
+      {{ isEdit ? 'Ändern' : 'Hinzufügen' }}
+    </button>
   </form>
 </template>
 
@@ -30,4 +44,3 @@ const handleSubmit = () => {
   isEdit.value = false
 }
 </script>
-

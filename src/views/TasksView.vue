@@ -1,20 +1,45 @@
 <template>
-  <div class="tasks-view">
-    <h2>Aufgaben 📝</h2>
+  <div class="space-y-8">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 text-transparent bg-clip-text">
+        Aufgaben verwalten
+      </h2>
+    </div>
 
-    <TaskForm :modelValue="selectedTask" @submit="handleSubmit" />
+    <div class="card">
+      <TaskForm :modelValue="selectedTask" @submit="handleSubmit" />
+    </div>
 
-    <div v-if="tasks.length === 0">Keine Aufgaben vorhanden.</div>
+    <div v-if="tasks.length === 0" class="text-center py-12 card">
+      <p class="text-gray-500 text-lg">Keine Aufgaben vorhanden.</p>
+    </div>
 
-    <ul>
-      <li v-for="task in tasks" :key="task.id">
-        <strong>{{ task.description }}</strong>
-        <span v-if="task.dueDate"> | 📅 Fällig: {{ formatDate(task.dueDate) }}</span>
-        <span v-if="task.roommate"> | 👤 Zuständig: {{ task.roommate.name }}</span>
-        <button @click="editTask(task)">✏️</button>
-        <button @click="deleteTaskById(task.id)">🗑️</button>
-      </li>
-    </ul>
+    <div v-else class="space-y-4">
+      <div v-for="task in tasks" :key="task.id" 
+           class="card hover:shadow-lg transition-all duration-300">
+        <div class="flex items-center justify-between">
+          <div class="space-y-1">
+            <h3 class="text-lg font-semibold text-gray-900">{{ task.description }}</h3>
+            <div class="flex items-center space-x-4 text-sm text-gray-500">
+              <span v-if="task.dueDate" class="flex items-center">
+                <span class="mr-1">📅</span>
+                {{ formatDate(task.dueDate) }}
+              </span>
+              <span v-if="task.roommate" class="flex items-center">
+                <span class="mr-1">👤</span>
+                {{ task.roommate.name }}
+              </span>
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button @click="editTask(task)" 
+                    class="btn-secondary !py-2 !px-3">✏️</button>
+            <button @click="deleteTaskById(task.id)" 
+                    class="btn-secondary !py-2 !px-3">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -89,35 +114,3 @@ const formatDate = (dateStr) => {
 
 onMounted(loadTasks)
 </script>
-
-<style scoped>
-.tasks-view {
-  margin-top: 2rem;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  margin-bottom: 0.8rem;
-  padding: 0.5rem;
-  background: #f4f4f4;
-  border-radius: 6px;
-}
-
-button {
-  margin-left: 0.5rem;
-  padding: 0.2rem 0.5rem;
-  border: none;
-  background-color: #42b983;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #369f6b;
-}
-</style>
