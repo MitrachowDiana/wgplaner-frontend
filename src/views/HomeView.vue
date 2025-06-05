@@ -1,22 +1,5 @@
-<template>
+<<template>
   <div class="space-y-24">
-    <!-- Aufgaben-Kachel oben -->
-    <section class="max-w-4xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8">
-      <h2 class="text-2xl font-semibold mb-4">Aktuelle Aufgaben</h2>
-      <h3 class="text-xl font-medium mb-4">Aufgabenliste 📝</h3>
-
-      <div v-if="tasks.length === 0" class="text-gray-500">
-        Keine Aufgaben vorhanden.
-      </div>
-
-      <ul v-else class="space-y-3">
-        <li v-for="task in tasks" :key="task.id" class="border-b pb-2">
-          ✅ <strong>{{ task.description }}</strong>
-          <span v-if="task.dueDate"> – 📅 {{ formatDate(task.dueDate) }}</span>
-          <span v-if="task.roommate"> – 👤 {{ task.roommate.name }}</span>
-        </li>
-      </ul>
-    </section>
 
     <!-- Hero Section -->
     <section class="text-center space-y-8 py-16">
@@ -78,21 +61,46 @@ import { ref, onMounted } from 'vue'
 import { getTasks } from '../api/taskApi.js'
 
 const tasks = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-onMounted(async () => {
+const loadTasks = async () => {
   try {
+    loading.value = true
+    error.value = null
+
     const result = await getTasks()
     tasks.value = result
+
+    console.log('Aufgaben geladen:', result) // Debug-Log
   } catch (err) {
     console.error('Fehler beim Laden der Aufgaben:', err)
+    error.value = 'Aufgaben konnten nicht geladen werden.'
+  } finally {
+    loading.value = false
   }
-})
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
 }
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('de-DE', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+  } catch (err) {
+    console.error('Fehler beim Formatieren des Datums:', err)
+    return dateStr
+  }
+}
+
+onMounted(() => {
+  loadTasks()
+})
 </script>
 
 <style scoped>
