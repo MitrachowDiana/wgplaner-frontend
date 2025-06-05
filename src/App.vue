@@ -1,18 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <!-- Navigation -->
     <Header />
 
     <!-- TaskList nur auf der Startseite anzeigen -->
     <section v-if="route.path === '/' && tasks.length > 0" 
-             class="max-w-6xl mx-auto px-4 mt-8 sm:px-6 lg:px-8">
-      <div class="bg-white rounded-2xl shadow-lg p-6">
+             class="max-w-7xl mx-auto px-4 mt-12 sm:px-6 lg:px-8">
+      <div class="card space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-900">Aktuelle Aufgaben</h2>
         <TaskList />
       </div>
     </section>
 
     <!-- Seiteninhalt über Routing -->
-    <main class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       <router-view />
     </main>
   </div>
@@ -25,19 +26,3 @@ import TaskList from './components/TaskList.vue'
 
 const route = useRoute()
 </script>
-
-<style>
-:root {
-  --primary-color: #42b983;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.page-content {
-  margin-top: 2rem;
-}
-</style>

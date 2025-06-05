@@ -1,10 +1,12 @@
 <template>
-  <header class="bg-white shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <h1 class="text-2xl font-bold text-primary-600">WG-Planer</h1>
+  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 text-transparent bg-clip-text">
+          WG-Planer
+        </h1>
         
-        <nav class="flex space-x-6">
+        <nav class="flex items-center space-x-1">
           <router-link 
             v-for="link in links" 
             :key="link.path"
@@ -12,7 +14,8 @@
             class="nav-link"
             :class="{ 'active': route.path === link.path }"
           >
-            {{ link.icon }} {{ link.text }}
+            <span class="icon">{{ link.icon }}</span>
+            <span class="text">{{ link.text }}</span>
           </router-link>
         </nav>
       </div>
@@ -36,11 +39,26 @@ const links = [
 
 <style scoped>
 .nav-link {
-  @apply px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200;
-  text-decoration: none;
+  @apply flex items-center px-4 py-2 rounded-xl text-gray-600
+         hover:text-gray-900 hover:bg-gray-100/80
+         transition-all duration-300;
+}
+
+.nav-link .icon {
+  @apply mr-2;
 }
 
 .nav-link.active {
-  @apply bg-primary-100 text-primary-600;
+  @apply bg-primary-100/80 text-primary-600;
+}
+
+@media (max-width: 640px) {
+  .nav-link .text {
+    @apply hidden;
+  }
+  
+  .nav-link .icon {
+    @apply mr-0 text-lg;
+  }
 }
 </style>
