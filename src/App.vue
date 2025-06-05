@@ -1,15 +1,18 @@
 <template>
-  <div class="app-container">
+  <div class="min-h-screen bg-gray-50">
     <!-- Navigation -->
     <Header />
 
     <!-- TaskList nur auf der Startseite anzeigen -->
-    <section class="task-section" v-if="route.path === '/'">
-      <TaskList />
+    <section v-if="route.path === '/' && tasks.length > 0" 
+             class="max-w-6xl mx-auto px-4 mt-8 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-2xl shadow-lg p-6">
+        <TaskList />
+      </div>
     </section>
 
     <!-- Seiteninhalt über Routing -->
-    <main class="page-content">
+    <main class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <router-view />
     </main>
   </div>
@@ -24,18 +27,14 @@ const route = useRoute()
 </script>
 
 <style>
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+:root {
+  --primary-color: #42b983;
 }
 
-.task-section {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background-color: #46aa69;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .page-content {

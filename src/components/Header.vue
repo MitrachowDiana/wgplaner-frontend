@@ -1,39 +1,46 @@
 <template>
-  <h1>WG-Planer</h1>
-  <nav class="nav-bar">
-    <router-link to="/" exact-active-class="active">🏠 Start</router-link>
-    <router-link to="/tasks" exact-active-class="active">✅ Aufgaben</router-link>
-    <router-link to="/persons" exact-active-class="active">👥 Personen</router-link>
-    <router-link to="/apartment" exact-active-class="active">🏢 Wohnung</router-link>
-    <router-link to="/deadlines" exact-active-class="active">⏰ Fristen</router-link>
-  </nav>
+  <header class="bg-white shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <h1 class="text-2xl font-bold text-primary-600">WG-Planer</h1>
+        
+        <nav class="flex space-x-6">
+          <router-link 
+            v-for="link in links" 
+            :key="link.path"
+            :to="link.path"
+            class="nav-link"
+            :class="{ 'active': route.path === link.path }"
+          >
+            {{ link.icon }} {{ link.text }}
+          </router-link>
+        </nav>
+      </div>
+    </div>
+  </header>
 </template>
 
+<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+const links = [
+  { path: '/', text: 'Start', icon: '🏠' },
+  { path: '/tasks', text: 'Aufgaben', icon: '✅' },
+  { path: '/persons', text: 'Personen', icon: '👥' },
+  { path: '/apartment', text: 'Wohnung', icon: '🏢' },
+  { path: '/deadlines', text: 'Fristen', icon: '⏰' }
+]
+</script>
+
 <style scoped>
-.nav-bar {
-  display: flex;
-  gap: 1rem;
-  background-color: #f5f5f5;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid #ccc;
-  justify-content: center;
-}
-
-.nav-bar a {
+.nav-link {
+  @apply px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200;
   text-decoration: none;
-  font-weight: bold;
-  color: #333;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: background-color 0.3s;
 }
 
-.nav-bar a.active {
-  background-color: #42b983;
-  color: white;
-}
-
-h1{
-  color: #43a047;
+.nav-link.active {
+  @apply bg-primary-100 text-primary-600;
 }
 </style>
