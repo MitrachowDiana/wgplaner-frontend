@@ -9,7 +9,7 @@
     <div v-if="!flatId" class="card bg-red-50 border-red-100">
       <p class="text-red-600 flex items-center">
         <span class="text-xl mr-2">⚠️</span>
-        Bitte zuerst eine Wohnung unter "🏢 Wohnung" anlegen.
+        Bitte zuerst eine Wohnung unter "🏢 Wohnung\" anlegen.
       </p>
     </div>
 
