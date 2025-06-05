@@ -1,5 +1,4 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/flats`
-
+const API_URL = `${import.meta.env.VITE_API_URL}/flats`
 
 export async function getFlats() {
     const res = await fetch(API_URL)
