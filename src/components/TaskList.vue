@@ -33,7 +33,10 @@
 import { defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
-  tasks: Array
+  tasks: {
+    type: Array,
+    default: () => []
+  }
 })
 
 defineEmits(['edit', 'delete'])
