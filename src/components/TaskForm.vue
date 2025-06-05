@@ -1,28 +1,55 @@
 <template>
-  <form @submit.prevent="onSubmit" class="task-form">
-    <div class="form-row">
-      <div class="form-group">
-        <label for="description">Aufgabe:</label>
-        <input id="description" v-model="form.description" required />
+  <form @submit.prevent="onSubmit" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="space-y-2">
+        <label for="description" class="block text-sm font-medium text-gray-700">
+          Aufgabe
+        </label>
+        <input 
+          id="description" 
+          v-model="form.description" 
+          required
+          class="input w-full"
+          placeholder="Aufgabe beschreiben"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="dueDate">Fällig am:</label>
-        <input id="dueDate" type="date" v-model="form.dueDate" />
+      <div class="space-y-2">
+        <label for="dueDate" class="block text-sm font-medium text-gray-700">
+          Fällig am
+        </label>
+        <input 
+          id="dueDate" 
+          type="date" 
+          v-model="form.dueDate"
+          class="input w-full"
+        />
       </div>
 
-      <div class="form-group">
-        <label for="roommate">Zuständig:</label>
-        <select id="roommate" v-model="form.roommateId">
+      <div class="space-y-2">
+        <label for="roommate" class="block text-sm font-medium text-gray-700">
+          Zuständig
+        </label>
+        <select 
+          id="roommate" 
+          v-model="form.roommateId"
+          class="input w-full"
+        >
           <option :value="null">Niemand</option>
-          <option v-for="person in roommates" :key="person.id" :value="person.id">
+          <option 
+            v-for="person in roommates" 
+            :key="person.id" 
+            :value="person.id"
+          >
             {{ person.name }}
           </option>
         </select>
       </div>
-
-      <button type="submit">{{ isEditing ? 'Aktualisieren' : 'Erstellen' }}</button>
     </div>
+
+    <button type="submit" class="btn w-full">
+      {{ isEditing ? 'Aktualisieren' : 'Erstellen' }}
+    </button>
   </form>
 </template>
 
@@ -77,50 +104,3 @@ const onSubmit = () => {
   emit('submit', { ...form.value })
 }
 </script>
-
-<style scoped>
-.task-form {
-  margin-top: 1rem;
-}
-
-.form-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 0.2rem;
-}
-
-input,
-select {
-  padding: 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  min-width: 180px;
-}
-
-button {
-  background-color: #42b983;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  height: fit-content;
-  align-self: flex-start;
-}
-
-button:hover {
-  background-color: #369f6b;
-}
-</style>
-

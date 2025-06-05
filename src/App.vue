@@ -1,44 +1,35 @@
 <template>
-  <div class="app-container">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <!-- Navigation -->
     <Header />
 
     <!-- TaskList nur auf der Startseite anzeigen -->
-    <section class="task-section" v-if="route.path === '/'">
-      <TaskList />
+    <section v-if="route.path === '/' && tasks.length > 0" 
+             class="max-w-7xl mx-auto px-4 mt-12 sm:px-6 lg:px-8">
+      <div class="card space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-900">Aktuelle Aufgaben</h2>
+        <TaskList />
+      </div>
     </section>
 
     <!-- Seiteninhalt über Routing -->
-    <main class="page-content">
+    <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       <router-view />
     </main>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Header from './components/Header.vue'
 import TaskList from './components/TaskList.vue'
+import { getTasks } from './api/taskApi'
 
 const route = useRoute()
+const tasks = ref([])
+
+onMounted(async () => {
+  tasks.value = await getTasks()
+})
 </script>
-
-<style>
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.task-section {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
-  background-color: #46aa69;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.page-content {
-  margin-top: 2rem;
-}
-</style>

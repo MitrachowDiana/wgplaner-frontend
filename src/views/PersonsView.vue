@@ -1,20 +1,30 @@
 <template>
-  <div>
-    <h2 class="heading">Mitbewohner verwalten</h2>
+  <div class="space-y-8">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 text-transparent bg-clip-text">
+        Mitbewohner verwalten
+      </h2>
+    </div>
 
-    <!-- Hinweis, wenn keine Wohnung vorhanden ist -->
-    <p v-if="!flatId" style="color: red;">
-      ⚠️ Bitte zuerst eine Wohnung unter "🏢 Wohnung" anlegen.
-    </p>
+    <div v-if="!flatId" class="card bg-red-50 border-red-100">
+      <p class="text-red-600 flex items-center">
+        <span class="text-xl mr-2">⚠️</span>
+        Bitte zuerst eine Wohnung unter "🏢 Wohnung\" anlegen.
+      </p>
+    </div>
 
-    <!-- Formular & Liste nur anzeigen, wenn Wohnung vorhanden -->
-    <div v-else>
-      <PersonForm :modelValue="selectedPerson" @submit="handleSubmit" />
-      <PersonList
+    <div v-else class="space-y-8">
+      <div class="card">
+        <PersonForm :modelValue="selectedPerson" @submit="handleSubmit" />
+      </div>
+
+      <div class="card">
+        <PersonList
           :persons="persons"
           @edit="editPerson"
           @delete="deletePerson"
-      />
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -90,11 +100,3 @@ onMounted(async () => {
   await loadPersons()
 })
 </script>
-
-<style scoped>
-.heading {
-  color: black;
-  text-align: left;
-  margin-bottom: 1rem;
-}
-</style>

@@ -1,18 +1,39 @@
 <template>
-  <div class="apartment-view">
-    <h2>Wohnungsdetails 🏠</h2>
+  <div class="space-y-8">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 text-transparent bg-clip-text">
+        Wohnungsdetails
+      </h2>
+    </div>
 
-    <div v-if="loading">Lade Daten...</div>
+    <div v-if="loading" class="text-center py-12 card">
+      <p class="text-gray-500 text-lg">Lade Daten...</p>
+    </div>
 
-    <div v-else>
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <div v-else class="card space-y-6">
+      <p v-if="errorMessage" class="text-red-600">{{ errorMessage }}</p>
 
-      <label for="name">Wohnungsname:</label>
-      <input id="name" v-model="name" placeholder="z. B. Bärlin" />
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label for="name" class="block text-sm font-medium text-gray-700">
+            Wohnungsname
+          </label>
+          <input 
+            id="name" 
+            v-model="name" 
+            placeholder="z. B. Bärlin"
+            class="input w-full"
+          />
+        </div>
 
-      <button @click="handleSave" :disabled="saving">
-        {{ flat && flat.id ? 'Aktualisieren' : 'Wohnung erstellen' }}
-      </button>
+        <button 
+          @click="handleSave" 
+          :disabled="saving"
+          class="btn w-full"
+        >
+          {{ flat && flat.id ? 'Aktualisieren' : 'Wohnung erstellen' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -78,46 +99,3 @@ const handleSave = async () => {
 
 onMounted(loadFlats)
 </script>
-
-<style scoped>
-.apartment-view {
-  margin-top: 2rem;
-  text-align: center;
-  color: #1a1a1a;
-}
-
-label {
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-
-input {
-  padding: 0.4rem;
-  margin-right: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  padding: 0.4rem 1rem;
-  background-color: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-button:hover:enabled {
-  background-color: #369f6b;
-}
-
-.error {
-  color: red;
-  margin-bottom: 1rem;
-}
-</style>

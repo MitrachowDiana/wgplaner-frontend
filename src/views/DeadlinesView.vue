@@ -1,16 +1,34 @@
 <template>
-  <div class="fristen-view">
-    <h2>Fristen & Erinnerungen ⏰</h2>
-    <div v-if="sortedTasks.length === 0">
-      Keine Aufgaben mit Fälligkeit vorhanden.
+  <div class="space-y-8">
+    <div class="flex items-center justify-between">
+      <h2 class="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 text-transparent bg-clip-text">
+        Fristen & Erinnerungen
+      </h2>
     </div>
-    <ul>
-      <li v-for="task in sortedTasks" :key="task.id">
-        <strong>{{ task.description }}</strong>
-        <span v-if="task.dueDate"> | 📅 {{ formatDate(task.dueDate) }}</span>
-        <span v-if="task.roommate"> | 👤 {{ task.roommate.name }}</span>
-      </li>
-    </ul>
+
+    <div v-if="sortedTasks.length === 0" class="text-center py-12 card">
+      <p class="text-gray-500 text-lg">Keine Aufgaben mit Fälligkeit vorhanden.</p>
+    </div>
+
+    <div v-else class="space-y-4">
+      <div v-for="task in sortedTasks" 
+           :key="task.id" 
+           class="card hover:shadow-lg transition-all duration-300">
+        <div class="space-y-2">
+          <h3 class="text-lg font-semibold text-gray-900">{{ task.description }}</h3>
+          <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <span v-if="task.dueDate" class="flex items-center">
+              <span class="mr-1">📅</span>
+              {{ formatDate(task.dueDate) }}
+            </span>
+            <span v-if="task.roommate" class="flex items-center">
+              <span class="mr-1">👤</span>
+              {{ task.roommate.name }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -23,7 +41,6 @@ const tasks = ref([])
 onMounted(async () => {
   try {
     const all = await getTasks()
-    // Nur Aufgaben mit Frist
     tasks.value = all.filter(task => task.dueDate)
   } catch (e) {
     console.error('Fehler beim Laden der Aufgaben:', e)
@@ -44,22 +61,3 @@ const formatDate = (dateStr) => {
   })
 }
 </script>
-
-<style scoped>
-.fristen-view {
-  margin-top: 2rem;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  padding: 0.6rem;
-  margin-bottom: 0.4rem;
-  background: #f8f8f8;
-  border-left: 4px solid #42b983;
-  border-radius: 4px;
-}
-</style>
