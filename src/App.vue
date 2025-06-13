@@ -30,6 +30,6 @@ const route = useRoute()
 const tasks = ref([])
 
 onMounted(async () => {
-  tasks.value = await getTasks()
+  tasks.value = await getTasks().
 })
 </script>
